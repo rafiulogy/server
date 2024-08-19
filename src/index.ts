@@ -55,3 +55,5 @@ AppDataSource.initialize()
     console.log(error);
     process.exit(1);
   });
+
+export default app;
