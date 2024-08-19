@@ -5,11 +5,5 @@
       "memory": 128,
       "maxDuration": 60
     }
-  },
-  "git": {
-    "deploymentEnabled": {
-      "sabbir": false,
-      "main": false
-    }
   }
 }
