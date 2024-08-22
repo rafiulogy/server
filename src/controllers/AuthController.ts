@@ -13,8 +13,11 @@ class AuthController {
    * /api/auth/login
    */
   public static async login(req: Request, res: Response) {
-    const { mobile, password } = req.body;
-    if (!mobile || !password)
+    const query = req.query;
+    const mobile = String(query.mobile);
+    const password = String(query.password);
+
+    if (mobile.length < 2 || password.length < 2)
       return res.status(400).json({ message: "Mobile or password missing" });
 
     try {
@@ -28,9 +31,10 @@ class AuthController {
       if (!matchPassword) {
         return res.status(400).json({ message: "Invalid password" });
       }
-
+      console.log("all matches: ");
       sendResponseWithJwt(res, user, `Hi ${user.name} user are loggged In!`);
     } catch (error) {
+      console.log(error);
       return res.status(500).json({ message: "Try again later.", error });
     }
   }
@@ -40,7 +44,21 @@ class AuthController {
    * /api/auth/signup
    */
   public static async signup(req: Request, res: Response) {
-    const { name, mobile, password } = req.body;
+    const query = req.query;
+
+    const name = String(query.name);
+    const mobile = String(query.mobile);
+    const password = String(query.password);
+
+    if (mobile.length < 2 || password.length < 2)
+      return res.status(400).json({ message: "Mobile or password missing" });
+
+    const user = await User.findOne({ where: { mobile } });
+    if (user)
+      return res
+        .status(400)
+        .json({ message: `${user.name} account already esits!` });
+
     try {
       const user = User.create({
         name,
@@ -54,6 +72,7 @@ class AuthController {
         user,
       });
     } catch (error) {
+      console.log(error);
       res.status(500).json({ message: "Fail to create account!" });
     }
   }
